@@ -182,7 +182,14 @@ namespace Word_Doc_Beautifier
 
         private void btnSaveAsPDF_Click(object sender, EventArgs e)
         {
-            wordApp.Run("SaveAsPDF");
+            try
+            {
+                wordApp.Run("SaveAsPDF");
+            } 
+            catch
+            {
+                OnWordAppNotFound();
+            }
         }
 
         private void lblWordDoc_Click(object sender, EventArgs e)
@@ -441,8 +448,17 @@ namespace Word_Doc_Beautifier
 
         private void ActivateDocument(string doc)
         {
+            Word.Windows wordWindows;
+            try
+            {
+                wordWindows = wordApp.Windows;
+            }
+            catch
+            {
+                return;
+            }
             // 获取所有打开的 Word 文档窗口
-            Word.Windows wordWindows = wordApp.Windows;
+             
             wordApp.WindowState = WdWindowState.wdWindowStateMinimize;
             for (int i = 1; i <= wordWindows.Count; i++)
             {
