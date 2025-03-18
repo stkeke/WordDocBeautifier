@@ -79,20 +79,36 @@ namespace Word_Doc_Beautifier
             }
 
             UpdateStatus("Fond Word App, Exiting detecting thread");
-            InstallWordAppEventHandler();
-
             UpdateStatus("Refresh Main window");
             TriggerRefresh();
         }
 
+        private void UninstallWordAppEventHandler()
+        {
+            if (wordApp is not null)
+            {
+                UpdateStatus("Uninstall Word Event Handler");
+                wordApp.DocumentChange -= OnDocumentChange;
+                ae = (ApplicationEvents4_Event)wordApp;
+                ae.Quit -= OnWordQuit;
+                ae.DocumentBeforeClose -= OnDocumentBeforeClose;
+            }
+        }
         private void InstallWordAppEventHandler()
         {
             if (wordApp is not null)
             {
+                UpdateStatus("Install Word Event Handler");
                 wordApp.DocumentChange += OnDocumentChange;
                 ae = (ApplicationEvents4_Event)wordApp;
                 ae.Quit += OnWordQuit;
+                ae.DocumentBeforeClose += OnDocumentBeforeClose;
             }
+        }
+
+        private void OnDocumentBeforeClose(Document doc, ref bool Cancel)
+        {
+            //TriggerRefresh();
         }
 
         private void TriggerRefresh()
@@ -122,6 +138,7 @@ namespace Word_Doc_Beautifier
         private void OnDocumentChange()
         {
             // MessageBox.Show("Get DocumentChange Event");
+            UpdateStatus("Get Document Change Event");
             try
             {
                 if ( wordDoc.Name == wordApp.ActiveDocument.Name)
@@ -137,9 +154,7 @@ namespace Word_Doc_Beautifier
                 return;
             }
 
-            wordApp.DocumentChange -= OnDocumentChange;
             TriggerRefresh();
-            wordApp.DocumentChange += OnDocumentChange;
         }
 
         private void btnMultiChoice_FindAndConvertNumberIndex_Click(object sender, EventArgs e)
@@ -351,7 +366,9 @@ namespace Word_Doc_Beautifier
                 OnWordAppNotFound();
                 return;
             }
-            
+
+            UninstallWordAppEventHandler();
+
             lblWordDoc.Text = wordDoc.FullName;
             lblCompatibility.Text = "Word Compatibility: " + Convert.ToString(wordDoc.CompatibilityMode);
             string fileHeader =
