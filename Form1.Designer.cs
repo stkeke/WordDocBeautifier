@@ -1,6 +1,6 @@
 ﻿namespace Word_Doc_Beautifier
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -30,6 +30,7 @@
         {
             btnMultiChoice_FindAndConvertNumberIndex = new Button();
             groupBox1 = new GroupBox();
+            btnFindAndFormat3HChoices = new Button();
             btnFindAndFormat4HChoices = new Button();
             btnPageSetNarrorwMarginFooter = new Button();
             btnConvertToDocx = new Button();
@@ -50,6 +51,7 @@
             btnCloseAllWordApps = new Button();
             lblStatus = new Label();
             tbLog = new TextBox();
+            btn = new Button();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -66,19 +68,32 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(btn);
+            groupBox1.Controls.Add(btnFindAndFormat3HChoices);
             groupBox1.Controls.Add(btnFindAndFormat4HChoices);
             groupBox1.Controls.Add(btnMultiChoice_FindAndConvertNumberIndex);
             groupBox1.Location = new Point(49, 551);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(495, 256);
+            groupBox1.Size = new Size(495, 465);
             groupBox1.TabIndex = 1;
             groupBox1.TabStop = false;
             groupBox1.Text = "Multiple Choices";
             // 
+            // btnFindAndFormat3HChoices
+            // 
+            btnFindAndFormat3HChoices.AutoSize = true;
+            btnFindAndFormat3HChoices.Location = new Point(30, 211);
+            btnFindAndFormat3HChoices.Name = "btnFindAndFormat3HChoices";
+            btnFindAndFormat3HChoices.Size = new Size(296, 35);
+            btnFindAndFormat3HChoices.TabIndex = 0;
+            btnFindAndFormat3HChoices.Text = "Find and Format 3H Choices";
+            btnFindAndFormat3HChoices.UseVisualStyleBackColor = true;
+            btnFindAndFormat3HChoices.Click += btnFindAndFormat3HChoices_Click;
+            // 
             // btnFindAndFormat4HChoices
             // 
             btnFindAndFormat4HChoices.AutoSize = true;
-            btnFindAndFormat4HChoices.Location = new Point(30, 127);
+            btnFindAndFormat4HChoices.Location = new Point(30, 157);
             btnFindAndFormat4HChoices.Name = "btnFindAndFormat4HChoices";
             btnFindAndFormat4HChoices.Size = new Size(296, 35);
             btnFindAndFormat4HChoices.TabIndex = 0;
@@ -272,7 +287,18 @@
             tbLog.Size = new Size(535, 454);
             tbLog.TabIndex = 20;
             // 
-            // Form1
+            // btn
+            // 
+            btn.AutoSize = true;
+            btn.Location = new Point(30, 292);
+            btn.Name = "btn";
+            btn.Size = new Size(296, 35);
+            btn.TabIndex = 0;
+            btn.Text = "Find and Format V Choices";
+            btn.UseVisualStyleBackColor = true;
+            btn.Click += btnFormatVChoices_Click;
+            // 
+            // MainForm
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -297,7 +323,7 @@
             Controls.Add(lblWordDoc);
             Controls.Add(btnPageSetNarrorwMarginFooter);
             Controls.Add(groupBox1);
-            Name = "Form1";
+            Name = "MainForm";
             Text = "Word Doc Manager";
             Load += Form1_Load;
             groupBox1.ResumeLayout(false);
@@ -330,5 +356,7 @@
         private Button btnCloseAllWordApps;
         private Label lblStatus;
         private TextBox tbLog;
+        private Button btnFindAndFormat3HChoices;
+        private Button btn;
     }
 }

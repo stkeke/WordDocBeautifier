@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace Word_Doc_Beautifier
 {
-    using System.Runtime.InteropServices;
-
     internal static class Marshal
     {
         public static object? GetActiveObject(string progId) => GetActiveObject(progId, false);

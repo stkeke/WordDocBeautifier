@@ -1,21 +1,19 @@
 // Microsoft.Office.Interop.Word
 
-using Microsoft.Office.Interop.Word;
-using Word = Microsoft.Office.Interop.Word;
-using Application = Microsoft.Office.Interop.Word.Application;
-
-using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
-
+using System.Runtime.InteropServices;
+using Microsoft.Office.Interop.Word;
+using Application = Microsoft.Office.Interop.Word.Application;
 using Task = System.Threading.Tasks.Task;
-using Microsoft.VisualBasic.Logging;
+using Word = Microsoft.Office.Interop.Word;
+
 
 namespace Word_Doc_Beautifier
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
 
@@ -71,10 +69,15 @@ namespace Word_Doc_Beautifier
                 IsWordQuitting = false;
             }
 
+            int i = 0;
             while (wordApp is null)
             {
                 Thread.Sleep(1000);
-                //UpdateStatus("No Word App detected");
+                if (i++ > 3)
+                {
+                    UpdateStatus("No Word App detected");
+                    i = 0;
+                }
                 wordApp = Marshal.GetActiveObject("Word.Application") as Application;
             }
 
@@ -109,6 +112,7 @@ namespace Word_Doc_Beautifier
         private void OnDocumentBeforeClose(Document doc, ref bool Cancel)
         {
             //TriggerRefresh();
+            lbDocuments.Invoke(new Action(() => lbDocuments.Items.Remove(doc.Name)));
         }
 
         private void TriggerRefresh()
@@ -125,10 +129,12 @@ namespace Word_Doc_Beautifier
 
         private void btnPageSetNarrorwMarginFooter_Click(object sender, EventArgs e)
         {
+
+            //debug.log(wordDoc.PageSetup.PageHeight);
             wordApp.Run("Page_SetNarrowMarginAndFooter");
         }
 
-        
+
 
         private void TriggerButtonClick()
         {
@@ -141,7 +147,7 @@ namespace Word_Doc_Beautifier
             UpdateStatus("Get Document Change Event");
             try
             {
-                if ( wordDoc.Name == wordApp.ActiveDocument.Name)
+                if (wordDoc.Name == wordApp.ActiveDocument.Name)
                 {
                     return;
                 }
@@ -171,8 +177,8 @@ namespace Word_Doc_Beautifier
         {
             try
             {
-                wordApp.Run("ConvertFileToDocx");
-                btnRefresh.PerformClick();
+                wordApp.Run("Docx_ConvertOldFormatToDocx");
+                //btnRefresh.PerformClick();
             }
             catch
             {
@@ -185,7 +191,7 @@ namespace Word_Doc_Beautifier
             try
             {
                 wordApp.Run("SaveAsPDF");
-            } 
+            }
             catch
             {
                 OnWordAppNotFound();
@@ -344,7 +350,8 @@ namespace Word_Doc_Beautifier
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             wordApp = Marshal.GetActiveObject("Word.Application") as Application;
-            if (wordApp is null) {
+            if (wordApp is null)
+            {
                 UpdateStatus("Failed to get word app");
                 OnWordAppNotFound();
                 StartDetectWordAppThread();
@@ -375,11 +382,18 @@ namespace Word_Doc_Beautifier
             }
 
             UninstallWordAppEventHandler();
+            string fileHeader;
+            try
+            {
 
-            lblWordDoc.Text = wordDoc.FullName;
-            lblCompatibility.Text = "Word Compatibility: " + Convert.ToString(wordDoc.CompatibilityMode);
-            string fileHeader =
-                wordDoc.Sections.First.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary].Range.Text.Trim('\r', '\n');
+                lblWordDoc.Text = wordDoc.FullName;
+                lblCompatibility.Text = "Word Compatibility: " + Convert.ToString(wordDoc.CompatibilityMode);
+                fileHeader = wordDoc.Sections.First.Headers[WdHeaderFooterIndex.wdHeaderFooterPrimary].Range.Text.Trim('\r', '\n');
+            }
+            catch
+            {
+                return;
+            }
 
             if (fileHeader.Length == 0)
             {
@@ -398,10 +412,14 @@ namespace Word_Doc_Beautifier
         {
             try
             {
-                while (true)
+                Application word = Marshal.GetActiveObject("Word.Application") as Application;
+                while (word is not null)
                 {
-                    Application word = Marshal.GetActiveObject("Word.Application") as Application;
+                    UpdateStatus("Killing " + word.Name);
                     word.Quit();
+                    Thread.Sleep(1000);
+                    break;
+                    word = Marshal.GetActiveObject("Word.Application") as Application;
                 }
             }
             catch
@@ -418,7 +436,8 @@ namespace Word_Doc_Beautifier
             string? fn = null;
             StackTrace st = new StackTrace();
             StackFrame sf = st.GetFrame(1);
-            if (sf is not null) {
+            if (sf is not null)
+            {
                 fn = sf.GetMethod().Name;
                 log = log + " " + "[" + fn + "]";
             }
@@ -427,11 +446,11 @@ namespace Word_Doc_Beautifier
 
             if (tbLog.InvokeRequired)
             {
-                tbLog.Invoke( (MethodInvoker) delegate()
+                tbLog.Invoke((MethodInvoker)delegate ()
                 {
                     lblStatus.Text = log;
                     tbLog.AppendText(log + Environment.NewLine);
-                } );
+                });
             }
             else
             {
@@ -458,7 +477,7 @@ namespace Word_Doc_Beautifier
                 return;
             }
             // 获取所有打开的 Word 文档窗口
-             
+
             wordApp.WindowState = WdWindowState.wdWindowStateMinimize;
             for (int i = 1; i <= wordWindows.Count; i++)
             {
@@ -473,7 +492,7 @@ namespace Word_Doc_Beautifier
                 }
             }
 
-             UpdateStatus("Activate: " + doc);
+            UpdateStatus("Activate: " + doc);
         }
 
         private void lbDocuments_Click(object sender, EventArgs e)
@@ -517,6 +536,16 @@ namespace Word_Doc_Beautifier
         private void lbDocuments_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnFindAndFormat3HChoices_Click(object sender, EventArgs e)
+        {
+            wordApp.Run("MultiChoice_FindAndFormat3HChoices");
+        }
+
+        private void btnFormatVChoices_Click(object sender, EventArgs e)
+        {
+            wordApp.Run("MultiChoice_FormatVChoices");
         }
     }
 }
